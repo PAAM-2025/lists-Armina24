@@ -3,6 +3,7 @@ package com.example.lists
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Send
@@ -34,7 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.lists.ComposeActivity.Companion.EXTRA_TEXT
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
     private val chiuitListState = mutableStateOf(ChiuitStore.getAllData())
 
 
@@ -57,8 +60,18 @@ class MainActivity : AppCompatActivity() {
         Surface(color = Color.White) {
             Box(modifier = Modifier.fillMaxSize()) {
                 // TODO 5: Use a vertical list that composes and displays only the visible items.
-                // TODO 6: Make use of Compose DSL to describe the content of the list and make sure
-                // to instantiate a [ChiuitListItem] for every item in [chiuitListState.value].
+                // TODO 6: Make use of Compose DSL to describe the content of the list and make sure to instantiate a [ChiuitListItem] for every item in [chiuitListState.value].
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 88.dp)
+                ) {
+                    items(chiuitListState.value) { chiuit ->
+                        ChiuitListItem(chiuit)
+                    }
+                }
+
                 FloatingActionButton(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -137,10 +150,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setChiuitText(resultText: String?) {
-        // TODO 7: Check if text is not null or empty, instantiate a new chiuit object
+        // TODO 7: Check if text is not null or empty, instantiate a new chiuit object  then add it to the [chiuitListState.value].
 
-        //  then add it to the [chiuitListState.value].
-
+        val text = resultText?.trim()
+        if (!text.isNullOrEmpty()) {
+            val updated = chiuitListState.value.toMutableList()
+            updated.add(0, Chiuit(description = text))
+            chiuitListState.value = updated
+        }
     }
 
     @Preview(showBackground = true)
